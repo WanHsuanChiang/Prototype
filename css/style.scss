@@ -1,0 +1,254 @@
+$primary: #A30900;
+$secondary: #FF5A52;
+$dark: #262626;
+$grey: darkgrey;
+$light: rgb(233, 233, 233);
+$bg: white;
+$text: $dark;
+$textReverse: $bg;
+$footerH: 5vh;
+
+* {
+    box-sizing: border-box;
+    margin: 0px;
+  }
+  
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.fa , .fab , .fas , .far{
+  font-family: "Font Awesome 5 Pro";
+}
+  
+/* Style the header */
+header {
+  background-color: #666;
+  padding: 30px;
+  text-align: center;
+  font-size: 35px;
+  color: white;
+}
+ 
+/* Container for flexboxes */
+section {
+  display: -webkit-flex;
+  position: relative;
+  height: 95vh;
+  padding: 20px;
+  width: 100%
+}
+
+.window {
+  $barHeight: 30px;
+
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  border: 1px solid $dark;
+  background-color: $light;
+  color: $grey;
+  max-width: 95vw;
+  box-shadow: 2px 2px 5px $grey;
+  cursor: move;
+  .title {
+    height: $barHeight;
+    background-color: $light;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px;
+    .right {
+      display: flex;
+      justify-content: flex-end;
+      flex-direction: row-reverse;
+      font-size: 60%;
+      div {
+        margin: 5px;
+        justify-content: center;
+      }
+    }
+  }
+  .status {
+    height: $barHeight*1.5;
+    background-color: $bg;
+    border-top: 1px solid $grey;
+    border-bottom: 1px solid $grey;
+  }
+  .content {
+    background-color: $light;
+  }
+}
+  
+/* Style the footer */
+footer {
+  $height: 5vh;
+
+  background-color: $dark;
+  color: $textReverse;
+  padding: 0px 10px 0px 10px;
+  height: $height;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  .container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 0px;
+    height: $height;
+  }
+
+  .item {
+    display: flex;
+    justify-content: center;
+    margin: 0.7em;
+  }
+
+  .left {
+    justify-content: flex-start;
+  }
+  .right {
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    font-size: 60%;
+    color: $light;
+  }
+
+  a:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-bottom-style: solid;
+    border-bottom-color: $bg;
+  }
+
+  #search {
+    color: $dark;
+    background-color: $bg;
+    padding-right: 200px;
+  }
+}
+
+
+
+//http://androidcss.com/css/css3-floating-button-tutorial/
+.label-container{
+	position:fixed;
+	bottom:48px;
+	right:105px;
+	display:table;
+	visibility: hidden;
+}
+
+.label-text{
+	color: $textReverse;
+	background: $dark;
+	display:table-cell;
+	vertical-align:middle;
+	padding:10px;
+	border-radius:3px;
+}
+
+.label-arrow{
+	display:table-cell;
+	vertical-align:middle;
+	color: $dark;
+	opacity:0.5;
+}
+
+.float{
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	right:40px;
+	background-color:#F33;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+	z-index:1000;
+	animation: bot-to-top 2s ease-out;
+}
+
+ul{
+	position:fixed;
+	right:40px;
+	padding-bottom:20px;
+	bottom:80px;
+	z-index:100;
+}
+
+ul li{
+	list-style:none;
+	margin-bottom:10px;
+}
+
+ul li a{
+	background-color:#F33;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+	width:60px;
+	height:60px;
+	display:block;
+}
+
+ul:hover{
+	visibility:visible!important;
+	opacity:1!important;
+}
+
+
+.my-float{
+	font-size:24px;
+	margin-top:18px;
+}
+
+a#menu-share + ul{
+  visibility: hidden;
+}
+
+a#menu-share:hover + ul{
+  visibility: visible;
+  animation: scale-in 0.5s;
+}
+
+a#menu-share i{
+	animation: rotate-in 0.5s;
+}
+
+a#menu-share:hover > i{
+	animation: rotate-out 0.5s;
+}
+
+@keyframes bot-to-top {
+    0%   {bottom:-40px}
+    50%  {bottom:40px}
+}
+
+@keyframes scale-in {
+    from {transform: scale(0);opacity: 0;}
+    to {transform: scale(1);opacity: 1;}
+}
+
+@keyframes rotate-in {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+
+@keyframes rotate-out {
+    from {transform: rotate(360deg);}
+    to {transform: rotate(0deg);}
+}
+  
+  /* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
+  @media (max-width: 600px) {
+  section {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+  }
+}
