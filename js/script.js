@@ -1,38 +1,45 @@
 var unitWidth = "px";
 var unitPos = "em";
 
+
 function createScene(){
 
     var windows = [
+        {ID:"chrome-duplicate",
+            ICON:["fab","chrome"],
+            POSITION:{TOP:5,LEFT:38,Z:1},
+            WIDTH:700,
+            SIDE:{POSITION:"right",OPTION:["type","content","time"]},
+        },
         {ID:"chrome",
             ICON:["fab","chrome"],
             POSITION:{TOP:1,LEFT:1,Z:1},
             WIDTH:900,
-            SIDE:{POSITION:"left",OPTION:["keyword","type",]},
+            SIDE:{POSITION:"left",OPTION:["type","content","time"]},
         },
         {ID:"pdf",
             ICON:["fas","file-pdf"],
-            POSITION:{TOP:17,LEFT:5,Z:2},
+            POSITION:{TOP:25,LEFT:5,Z:2},
             WIDTH:500,
-            SIDE:{POSITION:"left",OPTION:["keyword","type",]},
+            SIDE:{POSITION:"left",OPTION:["type","content","time"]},
         },
         {ID:"excel",
             ICON:["fas","file-excel"],
             POSITION:{TOP:16,LEFT:20,Z:2},
             WIDTH:600,
-            SIDE:{POSITION:"left",OPTION:["keyword","type",]},
+            SIDE:{POSITION:"left",OPTION:["type","time"]},
         },
         {ID:"word",
             ICON:["fas","file-word"],
-            POSITION:{TOP:20,LEFT:50,Z:1},
+            POSITION:{TOP:28,LEFT:50,Z:1},
             WIDTH:450,
-            SIDE:{POSITION:"right",OPTION:["type",]},
+            SIDE:{POSITION:"right",OPTION:["type","content","time"]},
         },
         {ID:"slack",
             ICON:["fab","slack"],
             POSITION:{TOP:10,LEFT:35,Z:3},            
             WIDTH:700,
-            SIDE:{POSITION:"right",OPTION:["keyword","type",]},
+            SIDE:{POSITION:"right",OPTION:["type","time"]},
         },
     ];
 
@@ -40,13 +47,9 @@ function createScene(){
         "keyword": ["fas","font"],
         "type": ["fas","file-alt"],
         "content": ["fas","paragraph"],
-    }
+        "time": ["fas","clock"],
+    }    
 
-    var originTop;
-    var originLeft;
-    var originZ;
-    var mouseTarget;
-    
     for(var i = 0; i < windows.length; i++){        
         
         var container = d3.select("section").append("div").attr("class","window-container").attr("id",windows[i].ID)
@@ -58,14 +61,13 @@ function createScene(){
         var window = container.append("div").attr("class","window")
                     .style("width", windows[i].WIDTH + unitWidth)
                     .style("height", windows[i].WIDTH * (9/16) + unitWidth)
-                    .attr("draggable", true)
-                    .attr("ondragstart","drag(event");                               
+                    .attr("draggable", true);                            
         var title = window.append("div").attr("class","title");
         window.append("div").attr("class","status");
         window.append("div").attr("class","content");
 
         var left = title.append("div").attr("class","left");        
-        left.append("div").append("li").attr("class", windows[i].ICON[0] + " fa-" + windows[i].ICON[1]);
+        left.append("div").append("li").attr("class", windows[i].ICON[0] + " fa-" + windows[i].ICON[1] + " icon");
 
         var right = title.append("div").attr("class","right");
         right.append("a").append("div").append("li").attr("class","fas fa-times");
@@ -76,7 +78,7 @@ function createScene(){
         var side = container.append("div").attr("class","side").style("display","none");
         for(var j = 0; j < windows[i].SIDE.OPTION.length; j++) {
             let key = windows[i].SIDE.OPTION[j];
-            side.append("div").attr("class","option").attr("title",key)
+            side.append("a").append("div").attr("class","option").attr("title",key)
                 .append("li")
                 .attr("class",option[key][0] + " fa-" + option[key][1]);
         };
@@ -87,26 +89,64 @@ function createScene(){
 
         window.on("dragstart",dragStart);
         window.on("dragend",dragEnd);
-
+        window.on("drag",dragging);
     }
 
-    filterType();
+    displayTab("chrome",16);
+    d3.select("#chrome-duplicate").style("display","none");
 
-
-    var targetObj;
+    var targetObj; //window or side, for hover
+    var draggedObj; //d3.select(this) window
     var isDragging = false;
     var isHovering = false;
+    var originTop;
+    var originLeft;
+    var originZ;
     
     function dragStart(e) {
         isDragging = true;
+        draggedObj = d3.select(this);
+        var thumbHeight = 60;
+        var thumbWidth = thumbHeight*(16/9);
+        originTop = d3.select(this.parentNode).style("top");
+        originLeft = d3.select(this.parentNode).style("left");
         d3.select(this).style("opacity","0.4");
+        //d3.select(this).style("height",  thumbHeight + unitWidth);
+        //d3.select(this).style("width", +thumbWidth + unitWidth);
         d3.select(this.parentNode).select(".side").style("display","none");
-    }    
+    }
+
+    /*
+    Case 2: 
+    1. After Case 1
+    2. Drag excel
+    3. move pdf
+    4. drag to scanner
+    */    
+    function dragging(e) {
+        if(isDragging){
+            d3.select("#pdf").style("top", 20 + unitPos);
+            d3.select("#pdf").style("left", 50 + unitPos);
+            d3.select("#excel").style("top", 25 + unitPos);
+            d3.select("#excel").style("left", 60 + unitPos);         
+        }
+    }
 
     function dragEnd(e) {
         isDragging = false;
         d3.select(this).style("opacity","1");
-    }   
+        d3.select("#pdf").style("top",2 + unitPos);
+        d3.select("#pdf").style("left",5 + unitPos);
+        d3.select("#excel").style("top", 15 + unitPos);
+        d3.select("#excel").style("left", 40 + unitPos);
+
+        let lists = [
+            "keyword",
+            "type",
+            "time",
+        ]
+        displayScanner(lists);
+    }
 
     function mouseOver(e) {
 
@@ -136,6 +176,40 @@ function createScene(){
                 }
             });
         }
+    }
+
+    function displayScanner(arr){
+        d3.selectAll("section > ul").remove();
+        d3.select("section").append("ul");
+        for(var i =0; i<arr.length; i++){
+            var optionArr = option[arr[i]];
+            d3.select("section > ul").append("li").attr("title",arr[i]).append("a").attr("href","#").attr("class",arr[i])
+            .append("i")
+            .attr("class", optionArr[0] + " fa-" + optionArr[1] + " my-float");
+        }
+
+        d3.select(".time").append("div").attr("class" , "slidecontainer submenu")
+            .on("click",secondaryFilter)       
+            .append("input")
+            .attr("type","range")
+            .attr("min",1)
+            .attr("max",100)
+            .attr("value",50)
+            .attr("top", 20 + unitPos)
+            .attr("left", 40 + unitPos);            
+        /*
+        d3.select(".keyword").append("div").attr("class","placeholder submenu")
+            .append("form")
+            .append("input")
+            .attr("placeholder","Keyword Search");
+        */
+    }
+}
+
+function displayTab(id,n){
+    var tabGroup = d3.select("#" + id +" .left").append("div").attr("class","tab-group");
+    for(var i = 0; i < n ; i++) {
+        tabGroup.append("div").attr("class","tab");
     }    
 }
 
@@ -187,6 +261,19 @@ function displayFooter(){
 
 }
 
+function loadFunction(){
+
+    filterType();
+    d3.select("form").on("submit",submit);
+
+}
+/*
+var dragHandler = d3.drag()
+    .on("start", function(){
+        d3.select(this).style("transform","scale(0.1)");
+    })
+*/
+
 
 
 /*
@@ -208,11 +295,44 @@ function filterType() {
         excel.style("left",40 + unitPos);
 
         d3.selectAll(".side").style("display","none");
-
-        d3.select("section")
     });
 }
 
+/*
+Case: Keyword Search
+ */
+function submit() {
+    let width = 900*(2/3);
+    let height = getHeight(width);
+    d3.select("#chrome").style("z-index",101);
+    d3.select("#pdf").style("z-index",101); 
+
+    d3.select("#chrome .window")
+        .style("width",width + unitWidth)
+        .style("height",height + unitWidth);
+
+    d3.select("#pdf").style("left", 40 + unitPos);
+
+    d3.select("#chrome .tab-group").remove();
+    displayTab("chrome",6);
+
+    d3.select("#chrome-duplicate").style("display","flex");
+    displayTab("chrome-duplicate",10);
+}
+
+//case: secondaryFilter
+function secondaryFilter(){
+    var slackW = 600;
+    d3.select("#slack")
+        .style("top",20 + unitPos)
+        .style("left",2 + unitPos)
+    d3.select("#slack .window")
+        .style("width",slackW + unitWidth)
+        .style("height",getHeight(slackW) + unitWidth)
+        .style("z-index",100);
+    d3.select("#excel")
+        .style("top",5 + unitPos)
+}
 
 //min,max both included
 var getRandomInt = function(min,max){
@@ -222,4 +342,8 @@ var getRandomInt = function(min,max){
 //https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getHeight(w) {
+    return w*(9/16);
 }

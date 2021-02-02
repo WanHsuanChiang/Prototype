@@ -30,8 +30,8 @@ section .window-container {
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  -webkit-transition: top 1s, left 1s;
-  transition: top 1s, left 1s;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 section .window-container[position="right"] {
@@ -60,7 +60,16 @@ section .window {
   border: 1px solid #262626;
   position: relative;
   max-width: 95vw;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
   cursor: move;
+}
+
+section .window .icon {
+  margin-right: 1em;
+  margin-left: 0.5em;
+  position: relative;
+  top: 0.5em;
 }
 
 section .window .title {
@@ -76,7 +85,17 @@ section .window .title {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  padding: 5px;
+  padding: 0;
+}
+
+section .window .title .left {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
 }
 
 section .window .title .right {
@@ -95,6 +114,33 @@ section .window .title .right {
   font-size: 60%;
 }
 
+section .window .title .tab-group {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
+
+section .window .title .tab {
+  height: 70%;
+  width: 40px;
+  background-color: white;
+  border-radius: 5px 5px 0px 0px;
+  margin: 0px 2px;
+}
+
 section .window .title .right div {
   margin: 5px;
   -webkit-box-pack: center;
@@ -105,6 +151,8 @@ section .window .title .right div {
 section .window .status {
   height: 45px;
   background-color: white;
+  border-top: 1px solid #e9e9e9;
+  border-bottom: 1px solid #e9e9e9;
 }
 
 section .window .content {
@@ -265,12 +313,12 @@ footer #search {
   height: 60px;
   bottom: 40px;
   right: 40px;
-  background-color: #F33;
-  color: #FFF;
+  background-color: #A30900;
+  color: white;
   border-radius: 50px;
   text-align: center;
-  -webkit-box-shadow: 2px 2px 3px #999;
-          box-shadow: 2px 2px 3px #999;
+  -webkit-box-shadow: 2px 2px 3px #262626;
+          box-shadow: 2px 2px 3px #262626;
   z-index: 1000;
   -webkit-animation: bot-to-top 2s ease-out;
           animation: bot-to-top 2s ease-out;
@@ -281,7 +329,12 @@ ul {
   right: 40px;
   padding-bottom: 20px;
   bottom: 80px;
-  z-index: 100;
+  z-index: 1000;
+}
+
+ul:hover {
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 ul li {
@@ -290,20 +343,19 @@ ul li {
 }
 
 ul li a {
-  background-color: #F33;
-  color: #FFF;
+  background-color: #FF5A52;
+  color: white;
   border-radius: 50px;
   text-align: center;
-  -webkit-box-shadow: 2px 2px 3px #999;
-          box-shadow: 2px 2px 3px #999;
+  -webkit-box-shadow: 2px 2px 3px #262626;
+          box-shadow: 2px 2px 3px #262626;
   width: 60px;
   height: 60px;
   display: block;
 }
 
-ul:hover {
+li:hover .submenu {
   visibility: visible !important;
-  opacity: 1 !important;
 }
 
 .my-float {
@@ -419,6 +471,43 @@ a#menu-share:hover > i {
   }
 }
 
+svg {
+  width: 100%;
+  height: 100%;
+  fill: white;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+svg rect:nth-child(1) {
+  width: 25px;
+  height: 5px;
+  x: calc(20% + 7px);
+  y: 25%;
+}
+
+svg rect:nth-child(2) {
+  width: 40px;
+  height: 10px;
+  x: 20%;
+  y: 42%;
+}
+
+svg rect:nth-child(3) {
+  width: 25px;
+  height: 5px;
+  x: calc(20% + 7px);
+  y: 68%;
+}
+
 /* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
 @media (max-width: 600px) {
   section {
@@ -427,5 +516,69 @@ a#menu-share:hover > i {
         -ms-flex-direction: column;
             flex-direction: column;
   }
+}
+
+.slidecontainer {
+  visibility: hidden;
+  z-index: 200;
+  position: absolute;
+  background-color: white;
+  opacity: 0.5;
+  border-radius: 5px;
+  padding: 10px;
+  bottom: 40px;
+  left: -100px;
+}
+
+.slidecontainer:hover {
+  opacity: 0.8;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  -webkit-transition: opacity .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.placeholder {
+  visibility: hidden;
+  z-index: 200;
+  position: absolute;
+  background-color: white;
+  opacity: 0.5;
+  border-radius: 5px;
+  padding: 10px;
+  bottom: 250px;
+  left: -140px;
+}
+
+.placeholder:hover {
+  opacity: 0.8;
 }
 /*# sourceMappingURL=style.css.map */

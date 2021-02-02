@@ -9,26 +9,38 @@
     <script type="text/javascript" src="js/script.js"></script>
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </head>
-<body onload="createScene();displayFooter();">
-
+<body onload="createScene();displayFooter();loadFunction();">
 <section>
   <a href="#" class="float" id="menu-share">
+    <svg>
+      <rect></rect>
+      <rect></rect>
+      <rect></rect>
+    </svg>
+    <!--
     <i class="fas fa-qrcode my-float"></i>
+    -->
   </a>
   <ul>
     <li>
-      <a href="#">    
-        <i class="fa fa-facebook my-float"></i>
+      <a href="#"> 
+        <i class="fas fa-font my-float" title="Scan by keyword"></i>
+        <div class="placeholder submenu"><form><input placeholder="Keyword Search"></form></div>
       </a>
     </li>
     <li>
       <a href="#">
-        <i class="fa fa-google-plus my-float"></i>
+        <i class="fas fa-file-alt my-float" title="Scan by application type"></i>
       </a>
     </li>
     <li>
       <a href="#">
-        <i class="fa fa-twitter my-float"></i>
+        <i class="fas fa-paragraph my-float" title="Scan relative content"></i>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <i class="fas fa-clock my-float" title="Scan by active time"></i>
       </a>
     </li>
   </ul>
