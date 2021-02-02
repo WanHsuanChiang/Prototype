@@ -1,105 +1,145 @@
+var unitWidth = "px";
+var unitPos = "em";
+
 function createScene(){
 
     var windows = [
-        {ID:"chrome",ICON:["fab","chrome"],TOP:1,LEFT:1,Z:1,WIDTH:900},
-        {ID:"pdf",ICON:["fas","file-pdf"],TOP:17,LEFT:5,Z:2,WIDTH:500},
-        {ID:"excel",ICON:["fas","file-excel"],TOP:16,LEFT:20,Z:2,WIDTH:600},
-        {ID:"word",ICON:["fas","file-word"],TOP:20,LEFT:50,Z:1,WIDTH:450},
-        {ID:"slack",ICON:["fab","slack"],TOP:5,LEFT:40,Z:3,WIDTH:700},
+        {ID:"chrome",
+            ICON:["fab","chrome"],
+            POSITION:{TOP:1,LEFT:1,Z:1},
+            WIDTH:900,
+            SIDE:{POSITION:"left",OPTION:["keyword","type",]},
+        },
+        {ID:"pdf",
+            ICON:["fas","file-pdf"],
+            POSITION:{TOP:17,LEFT:5,Z:2},
+            WIDTH:500,
+            SIDE:{POSITION:"left",OPTION:["keyword","type",]},
+        },
+        {ID:"excel",
+            ICON:["fas","file-excel"],
+            POSITION:{TOP:16,LEFT:20,Z:2},
+            WIDTH:600,
+            SIDE:{POSITION:"left",OPTION:["keyword","type",]},
+        },
+        {ID:"word",
+            ICON:["fas","file-word"],
+            POSITION:{TOP:20,LEFT:50,Z:1},
+            WIDTH:450,
+            SIDE:{POSITION:"right",OPTION:["type",]},
+        },
+        {ID:"slack",
+            ICON:["fab","slack"],
+            POSITION:{TOP:10,LEFT:35,Z:3},            
+            WIDTH:700,
+            SIDE:{POSITION:"right",OPTION:["keyword","type",]},
+        },
     ];
+
+    var option = {
+        "keyword": ["fas","font"],
+        "type": ["fas","file-alt"],
+        "content": ["fas","paragraph"],
+    }
 
     var originTop;
     var originLeft;
     var originZ;
+    var mouseTarget;
     
-    for(var i = 0; i < windows.length; i++){
+    for(var i = 0; i < windows.length; i++){        
         
-        var window;
-        window = d3.select("section")
-                   .append("div")
-                   .attr("id",windows[i].ID)
-                   .attr("class","window")                   
-                   .style("top", windows[i].TOP + "em")
-                   .style("left", windows[i].LEFT + "em")
-                   .style("z-index",windows[i].Z)
-                   .style("width", windows[i].WIDTH + "px")
-                   .style("height", windows[i].WIDTH * (9/16) + "px")
-                   .attr("draggable", true)
-                   .attr("ondragstart","drag(event");             
+        var container = d3.select("section").append("div").attr("class","window-container").attr("id",windows[i].ID)
+                        .style("top", windows[i].POSITION.TOP + unitPos)
+                        .style("left", windows[i].POSITION.LEFT + unitPos)
+                        .style("z-index",windows[i].POSITION.Z)
+                        .attr("position",windows[i].SIDE.POSITION);
+        // inside window                               
+        var window = container.append("div").attr("class","window")
+                    .style("width", windows[i].WIDTH + unitWidth)
+                    .style("height", windows[i].WIDTH * (9/16) + unitWidth)
+                    .attr("draggable", true)
+                    .attr("ondragstart","drag(event");                               
         var title = window.append("div").attr("class","title");
         window.append("div").attr("class","status");
         window.append("div").attr("class","content");
 
-        var left = title.append("div")
-                        .attr("class","left");
-        var right = title.append("div")
-                         .attr("class","right");
-        left.append("div")
-            .append("li")
-            .attr("class", windows[i].ICON[0] + " fa-" + windows[i].ICON[1])
-          
-        right.append("a")
-          .append("div")
-          .append("li")
-          .attr("class","fas fa-times");
+        var left = title.append("div").attr("class","left");        
+        left.append("div").append("li").attr("class", windows[i].ICON[0] + " fa-" + windows[i].ICON[1]);
 
-        right.append("a")
-          .append("div")
-          .append("li")
-          .attr("class","far fa-square");
+        var right = title.append("div").attr("class","right");
+        right.append("a").append("div").append("li").attr("class","fas fa-times");
+        right.append("a").append("div").append("li").attr("class","far fa-square");
+        right.append("a").append("div").append("li").attr("class","fas fa-window-minimize");  
+        
+        //window side
+        var side = container.append("div").attr("class","side").style("display","none");
+        for(var j = 0; j < windows[i].SIDE.OPTION.length; j++) {
+            let key = windows[i].SIDE.OPTION[j];
+            side.append("div").attr("class","option").attr("title",key)
+                .append("li")
+                .attr("class",option[key][0] + " fa-" + option[key][1]);
+        };
+                     
+        window.on("mouseover",mouseOver);
+        window.on("mouseout",mouseOut);
+        side.on("mouseover", mouseOver);
 
-        right.append("a")
-          .append("div")
-          .append("li")
-          .attr("class","fas fa-window-minimize");           
-
-        window.on("mouseover",mouseover);
         window.on("dragstart",dragStart);
         window.on("dragend",dragEnd);
 
-
-
     }
 
-    function mouseover(e) {
-        d3.select(this).style
-    }
+    filterType();
 
+
+    var targetObj;
+    var isDragging = false;
+    var isHovering = false;
+    
     function dragStart(e) {
+        isDragging = true;
         d3.select(this).style("opacity","0.4");
-        d3.select(this).style("z-index",100);
-    }
+        d3.select(this.parentNode).select(".side").style("display","none");
+    }    
 
     function dragEnd(e) {
+        isDragging = false;
         d3.select(this).style("opacity","1");
+    }   
+
+    function mouseOver(e) {
+
+        if(isDragging === false){
+            targetObj = d3.select(this).attr("class");
+        
+            if(targetObj == "window" && isHovering === false && d3.select(this.parentNode).select(".side").style("display")=="none" ){
+                // if mouse over window
+                isHovering = true;                
+                sleep(500).then(()=>{
+                    d3.select(this.parentNode).select(".side").style("display","flex");
+                });                                                                       
+            };
+        }
     }
 
-    /*
-    d3.selectAll(".window").call(d3.drag.on("start", dragStarted));
-    d3.selectAll(".window").call(d3.drag.on("drag", dragged));
-    d3.selectAll(".window").call(d3.drag.on("end", dragEnded));
-
-    function dragStarted(){
-        originZ = d3.select(this).attr("z-index");
-        originTop = d3.select(this).attr("top");
-        originLeft = d3.select(this).attr("left");
-        d3.select(this).style("z-index","1");
-    }
-
-    function dragged(){
-
-    }
-
-    function dragEnded(){
-        d3.select(this).attr("z-index",originZ);
-        d3.select(this).attr("top",originTop);
-        d3.select(this).attr("left",originLeft);
-    }
-    */
+    function mouseOut(e) {
+        if(isDragging === false){
+            isHovering = false;
+            sleep(1000).then(() => {
+                if(targetObj == "window"){
+                    d3.select(this.parentNode).select(".side").style("display","none");
+                } else if (targetObj == "side"){
+                    d3.select(this.parentNode).select(".side").on("mouseout",function(){
+                        d3.select(this).style("display","none");
+                    })
+                }
+            });
+        }
+    }    
 }
 
 function displayFooter(){
-
     var order = {
         LEFT:0,
         RIGHT:1,
@@ -147,7 +187,39 @@ function displayFooter(){
 
 }
 
+
+
+/*
+case: filter by type
+1. hover on pdf
+2. click on type
+3. pdf and excel will pop out
+*/
+//TODO detect which window should do what
+function filterType() {
+    d3.selectAll("[title='type']").on("click", function(){
+        var pdf =  d3.select("#pdf");
+        var excel = d3.select("#excel");
+        pdf.style("z-index",100);
+        pdf.style("top",2 + unitPos);
+        pdf.style("left",5 + unitPos);
+        excel.style("z-index",100);
+        excel.style("top",15 + unitPos);
+        excel.style("left",40 + unitPos);
+
+        d3.selectAll(".side").style("display","none");
+
+        d3.select("section")
+    });
+}
+
+
 //min,max both included
 var getRandomInt = function(min,max){
     return Math.floor(Math.random() * ((max+1) - min) ) + min;
+}
+
+//https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

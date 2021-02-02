@@ -8,6 +8,22 @@ $text: $dark;
 $textReverse: $bg;
 $footerH: 5vh;
 
+@mixin display($display) {
+  display: flex;
+  flex-direction: $display;
+}
+
+@mixin bar {
+  @include display(row);
+  justify-content: space-between;
+  .right {
+    @include display(row);
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    font-size: 60%;
+  }
+}
+
 * {
     box-sizing: border-box;
     margin: 0px;
@@ -19,66 +35,99 @@ body {
 
 .fa , .fab , .fas , .far{
   font-family: "Font Awesome 5 Pro";
-}
-  
-/* Style the header */
-header {
-  background-color: #666;
-  padding: 30px;
-  text-align: center;
-  font-size: 35px;
-  color: white;
-}
+}  
  
 /* Container for flexboxes */
 section {
+  @mixin basicStyle {
+    box-shadow: 2px 2px 5px $grey;
+    background-color: $light;
+    color: $grey;
+    border: 1px solid $dark;
+  }  
+
   display: -webkit-flex;
   position: relative;
   height: 95vh;
   padding: 20px;
-  width: 100%
-}
+  width: 80vh;
 
-.window {
-  $barHeight: 30px;
-
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  border: 1px solid $dark;
-  background-color: $light;
-  color: $grey;
-  max-width: 95vw;
-  box-shadow: 2px 2px 5px $grey;
-  cursor: move;
-  .title {
-    height: $barHeight;
-    background-color: $light;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 5px;
-    .right {
-      display: flex;
-      justify-content: flex-end;
+  .window-container {
+    position:absolute;
+    @include display(row);
+    transition: top 1s, left 1s;
+    &[position = "right"] {
       flex-direction: row-reverse;
-      font-size: 60%;
-      div {
-        margin: 5px;
-        justify-content: center;
+    }
+    &:hover {
+      z-index: 100 !important;
+    }
+  }
+
+  .window {
+    $barHeight: 30px;    
+  
+    @include display(column);
+    @include basicStyle();
+    position: relative;    
+    max-width: 95vw;
+    
+    cursor: move;
+    
+    .title {
+      height: $barHeight;
+      background-color: $light;
+      @include bar();
+      padding: 5px;
+      .right {      
+        div {
+          margin: 5px;
+          justify-content: center;
+        }
+      }
+    }
+    .status {
+      height: $barHeight*1.5;
+      background-color: $bg;
+    }
+    .content {
+      background-color: $light;
+    }
+  }
+
+  .side {
+    @include display(column);
+    .option {
+      $index: 50px;     
+
+      background-color: $dark;
+      opacity: 0.3;
+      border-radius: $index;
+      width: $index;
+      height: $index;
+      @include basicStyle();
+      margin: 5px;
+      font-size: $index*0.4;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: $text;
+      
+      &:hover {
+        opacity: 1;
+        background-color: $grey;
+        color: $textReverse;        
+      }
+
+      &:active {
+        box-shadow: 1px 1px;
       }
     }
   }
-  .status {
-    height: $barHeight*1.5;
-    background-color: $bg;
-    border-top: 1px solid $grey;
-    border-bottom: 1px solid $grey;
-  }
-  .content {
-    background-color: $light;
-  }
 }
+
+
   
 /* Style the footer */
 footer {
@@ -86,11 +135,10 @@ footer {
 
   background-color: $dark;
   color: $textReverse;
-  padding: 0px 10px 0px 10px;
+  padding: 0px 10px;
   height: $height;
   text-align: left;
-  display: flex;
-  flex-direction: row;
+  @include display(row);
   justify-content: space-between;
   align-items: center;
 
